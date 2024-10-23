@@ -53,3 +53,7 @@ const authenticateToken = (request, response, next) => {
   }
 };
 ///
+
+app.get("/",(req,res) => {
+  res.send("HELLO GANESH")
+})
