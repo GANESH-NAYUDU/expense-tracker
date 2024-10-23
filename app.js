@@ -55,5 +55,57 @@ const authenticateToken = (request, response, next) => {
 ///
 
 app.get("/",(req,res) => {
-  res.send("HELLO GANESH")
-})
+  res.send("Hii this is a expense tracking app")
+}
+)
+
+//SIGNUP POST API
+app.post("/signup", async (request, response) => {
+  const { username, password } = request.body;
+  const hashedPassword = await bcrypt.hash(request.body.password, 10);
+  const selectUserQuery = `SELECT username FROM usertable WHERE username = '${username}'`;
+  const dbUser = await db.get(selectUserQuery);
+  if (dbUser === undefined) {
+    const createUserQuery = `
+      INSERT INTO 
+        usertable (username,password,createdAt) 
+      VALUES 
+        (
+          '${username}', 
+          '${hashedPassword}',
+           date("now")
+        )`;
+    const dbResponse = await db.run(createUserQuery);
+    const newUserId = dbResponse.lastID;
+    response.status(200);
+    response.send({ message: "user created", userId: newUserId });
+  } else {
+    response.status = 400;
+    response.send({ message: "user already exits" });
+  }
+});
+//
+
+//LOGIN POST API
+
+app.post("/login", async (request, response) => {
+  const { username, password } = request.body;
+  const selectUserQuery = `SELECT * FROM usertable WHERE username = '${username}'`;
+  const dbUser = await db.get(selectUserQuery);
+  if (dbUser === undefined) {
+    response.status(400);
+    response.send({ message: "Invalid User" });
+  } else {
+    const isPasswordMatched = await bcrypt.compare(password, dbUser.password);
+    if (isPasswordMatched === true) {
+      const payload = {
+        username: username,
+      };
+      const jwtToken = jwt.sign(payload, "MY_SECRET_TOKEN");
+      response.send({ userId: dbUser.userid, jwtToken: jwtToken });
+    } else {
+      response.status(400);
+      response.send({ message: "Invalid Password" });
+    }
+  }
+});

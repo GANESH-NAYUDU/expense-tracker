@@ -1,0 +1,21 @@
+###
+POST http://localhost:4000/signup/
+content-type : application/json
+
+{
+
+    "username" : "gani",
+    "password" : "Gan@"
+}
+
+###
+
+POST http://localhost:4000/login/
+Content-Type: application/json
+
+{
+     "username" : "gani",
+    "password" : "Gan@"
+}
+
+###
