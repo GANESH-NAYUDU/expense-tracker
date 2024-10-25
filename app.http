@@ -8,6 +8,7 @@ content-type : application/json
     "password" : "Gan@"
 }
 
+
 ###
 
 POST http://localhost:4000/login/
@@ -19,3 +20,29 @@ Content-Type: application/json
 }
 
 ###
+
+POST http://localhost:4000/transactions
+Content-Type: application/json
+Authorization:  :Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImdhbmkiLCJpYXQiOjE3Mjk4MzMwODJ9.L8qCS25XGsr5r4GD8FzKhcoQzs5nn6E-pC7CNkSj6OU
+
+{
+    "userId" : 1,
+    "type" : "expense",
+    "amount": 1500, 
+    "date" : "1-1-2024",
+    "description" : "extra bonus credited",
+    "category" : "bonus"
+}
+
+###
+
+GET http://localhost:4000/transactions
+
+
+
+
+
+
+
+
+

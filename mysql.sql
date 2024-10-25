@@ -13,4 +13,4 @@
 --     createdAt DATETIME
 -- )
 
-SELECT * FROM  transactions
+-- SELECT * FROM  transactions

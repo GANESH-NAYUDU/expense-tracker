@@ -45,7 +45,7 @@ const authenticateToken = (request, response, next) => {
     jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
       if (error) {
         response.status(401);
-        response.send("Invalid JWT Token");
+        response.send(error);
       } else {
         next();
       }
@@ -55,7 +55,7 @@ const authenticateToken = (request, response, next) => {
 ///
 
 app.get("/",(req,res) => {
-  res.send("Hii this is a expense tracking app")
+  res.send("Hii this is an expense tracking app")
 }
 )
 
@@ -99,13 +99,47 @@ app.post("/login", async (request, response) => {
     const isPasswordMatched = await bcrypt.compare(password, dbUser.password);
     if (isPasswordMatched === true) {
       const payload = {
-        username: username,
+        username: dbUser.username,
       };
       const jwtToken = jwt.sign(payload, "MY_SECRET_TOKEN");
-      response.send({ userId: dbUser.userid, jwtToken: jwtToken });
+      response.send({jwtToken: jwtToken, userId: dbUser.userId, });
     } else {
       response.status(400);
       response.send({ message: "Invalid Password" });
     }
   }
 });
+
+
+//Add a new transaction API
+
+app.post("/transactions",authenticateToken, async (req,res) => {
+  const {userId,type,amount,date,description,category} = req.body
+  console.log(type) 
+  if (type === "income" || type === "expense") {
+    await db.run(` INSERT INTO transactions(userId,type,amount,date,description,category)
+            VALUES (${userId},"${type}","${amount}","${date}","${description}","${category}")
+      `)
+      res.send("Transaction added successfully")
+     
+  }
+  else {
+    res.send("Invalid Type")
+  }
+})
+
+
+//GET ALL TRANSACTIONS API
+
+app.get("/transactions",async (req,res) => {
+  const allTransactions = await db.all(`
+      SELECT * FROM transactions
+    ` )
+    res.send(allTransactions)   
+  
+})
+
+
+
+
+
